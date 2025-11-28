@@ -35,11 +35,19 @@ def format_dataset_str(d: dict, score: float = None) -> str:
 # VENDOR TOOLS
 # ==========================================
 
-@mcp.tool()
+@mcp.tool(
+    description="Search for data vendors (companies) by name or industry. Use this to find who is selling data."
+)
 def search_vendors(query: str, limit: int = 5) -> str:
     """
-    Search for vendors by name or industry focus. 
-    Returns a summarized list of vendors found.
+    Search for vendors by name or industry focus using a partial match.
+    
+    Args:
+        query: The search term (e.g., "Healthcare", "Global Analytics", "Finance").
+        limit: The maximum number of vendors to return (default: 5).
+
+    Returns:
+        A formatted string list of vendors matching the criteria.
     """
     sql = """
         SELECT 
@@ -65,10 +73,18 @@ def search_vendors(query: str, limit: int = 5) -> str:
         
     return "\n".join(output)
 
-@mcp.tool()
+@mcp.tool(
+    description="Get detailed profile information for a specific vendor using their ID."
+)
 def get_vendor_details(vendor_id: str) -> str:
     """
-    Retrieve public detailed information about a specific vendor.
+    Retrieve public detailed information about a specific vendor, including website, location, and full description.
+
+    Args:
+        vendor_id: The UUID of the vendor (usually obtained from search_vendors).
+
+    Returns:
+        A detailed text profile of the vendor.
     """
     sql = """
         SELECT 
@@ -100,11 +116,20 @@ def get_vendor_details(vendor_id: str) -> str:
 # DATASET TOOLS
 # ==========================================
 
-@mcp.tool()
+@mcp.tool(
+    description="Search for datasets using natural language (semantic search). This is the primary tool for finding data."
+)
 def search_datasets_semantic(query: str, limit: int = 5) -> str:
     """
-    Performs a semantic search to find relevant datasets.
-    Returns a ranked list of datasets with relevance scores.
+    Performs a semantic search to find relevant datasets based on meaning rather than just keywords.
+    It uses vector embeddings to calculate similarity.
+
+    Args:
+        query: The user's natural language request (e.g., "I need data about patient outcomes" or "Stock market history").
+        limit: The maximum number of datasets to return (default: 5).
+
+    Returns:
+        A ranked list of datasets with titles, descriptions, IDs, and relevance scores.
     """
     query_embedding = get_embedding(query)
     
@@ -135,14 +160,24 @@ def search_datasets_semantic(query: str, limit: int = 5) -> str:
         
     return "\n".join(output)
 
-@mcp.tool()
+@mcp.tool(
+    description="Filter datasets by specific attributes like Domain or Pricing Model. Use this for narrowing down results."
+)
 def filter_datasets(
     domain: Optional[str] = None, 
     price_model: Optional[str] = None,
     limit: int = 10
 ) -> str:
     """
-    Filter datasets by structured attributes (Domain, Pricing).
+    Filter datasets by structured attributes. Useful when the user has specific hard constraints.
+
+    Args:
+        domain: The domain of the dataset (e.g., "Finance", "Healthcare", "Retail").
+        price_model: The pricing model (e.g., "Free", "Subscription", "Usage-based").
+        limit: Maximum results to return (default: 10).
+
+    Returns:
+        A list of datasets matching the specific filters.
     """
     sql = """
         SELECT d.id, d.title, d.domain, d.pricing_model, d.description, v.name as vendor_name
@@ -175,11 +210,19 @@ def filter_datasets(
         
     return "\n".join(output)
 
-@mcp.tool()
+@mcp.tool(
+    description="Get a complete report of a dataset, including its Column Schema (structure) and full metadata."
+)
 def get_dataset_details_complete(dataset_id: str) -> str:
     """
-    Retrieves COMPLETE details about a dataset, formatted as a report.
-    Includes Metadata and Schema (Column definitions).
+    Retrieves COMPLETE details about a dataset. Use this when the user asks for "details", "schema", "columns",
+    or "what is inside" a specific dataset.
+
+    Args:
+        dataset_id: The UUID of the dataset (usually obtained from search_datasets_semantic).
+
+    Returns:
+        A formatted text report containing metadata, vendor info, and a list of columns with their data types.
     """
     # 1. Get Metadata
     meta_sql = """
