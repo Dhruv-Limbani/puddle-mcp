@@ -7,7 +7,7 @@ from puddle_server.mcp import mcp
 import puddle_server.tools.context_tools 
 import puddle_server.tools.query_tool 
 import puddle_server.tools.inquiry_tools
-import puddle_server.prompts
+# import puddle_server.prompts
 load_dotenv()
 API_KEY = os.environ["API_KEY"]
 

@@ -195,8 +195,6 @@ Inquiries follow this status progression:
 - **'responded'**: Vendor has provided a response, waiting for buyer reaction
 - **'accepted'**: Buyer accepted the vendor's offer - deal done
 - **'rejected'**: Buyer rejected the vendor's offer - deal lost
-
-Note: There is NO 'draft' status. Inquiries are submitted immediately upon creation.
 """
 
 @mcp.prompt(
